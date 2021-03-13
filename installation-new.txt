@@ -158,6 +158,16 @@ kubectl get pods -n twitter -o wide
 
 kubectl describe pod/database -n twitter
 
+=======================
+Ex:
+root@master:/home/dev# kubectl exec -it pod/db bash -n facebook -c web
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+root@db:/# exit
+exit
+root@master:/home/dev# kubectl exec -it pod/db bash -n facebook -c db
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+root@db:/#
+========================
 
 check the directory has been created to that node
 
