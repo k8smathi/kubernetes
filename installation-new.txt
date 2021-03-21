@@ -11,6 +11,7 @@ node2,node3,node4 going to be nodes
 in all the nodes run the following command
 
 
+###################################### Kuberneres Cluster Installation #####################################################
 
 Install Docker Engine (run all the nodes)
 ---------------------
@@ -59,26 +60,33 @@ mkdir -p /etc/systemd/system/docker.service.d
 Restart docker.
 systemctl daemon-reload
 systemctl restart docker
+systemctl enable docker
 
 *********************************************************************************
-run this below command in only node1.coz we are going to make node1 as kube master
+##### run this below command in only on Master node and we will get a token id form the below command which should be copied and executed in slave nodes ########
 
 kubeadm init --apiserver-advertise-address $(hostname -i) --pod-network-cidr=192.168.0.0/16
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-export kubever=$(kubectl version | base64 | tr -d '\n')
 
-https://www.weave.works/docs/net/latest/kubernetes/kube-addon/ (kube proxy addons installation)
+####### The below 3 lines will come as output of the above command, which we need to run it as the user where we are executing kubectl command (eg user: k8s_mathi).############
+
+Execute as Mathi user(k8s_mathi):
+1. mkdir -p $HOME/.kube
+2. sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+3. sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+###### The below link gives the open source Network driver (command will be available) which help to communicate between the nodes in the cluster#################
+
+https://www.weave.works/docs/net/latest/kubernetes/kube-addon/ -----> run the command which you get from this link on where the the kubectl is installed (eg: k8s_mathi)
 
 
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+verify the nodes are getting created by executing the token on slave nodes:
 
+watch -n 1 kubectl get nodes ---> Run this on Master to observer the slave are getting added in to kuberneted cluster after executing token (which you got from above output or through this command "kubeadm token create --print-join-command")
 
-
-verify:
-
-kubectl get nodes
+"example Token Commands: kubeadm join 10.128.0.17:6443 --token rqzevc.0riz6k3lcm5v4hnd \
+    --discovery-token-ca-cert-hash sha256:eab56846221e31f3e9b8b96b46abf3a7211d5c0a9280026d8b8809de98e008ba"
+    
+Other simple commands: 
 kubectl get pods --all-namespaces
 kubectl get nodes --show-lables
 kubectl get namespaces
